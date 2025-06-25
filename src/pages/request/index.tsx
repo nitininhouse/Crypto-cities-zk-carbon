@@ -1,6 +1,8 @@
 import { Clock, Check, Loader2, AlertCircle, Users, Eye, CheckCircle, XCircle } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { CONTRACT_ADDRESS as contractAddress } from '@/utils/constants/contracts';
+import { CONTRACT_ABI as contractABI} from '@/utils/constants/abi';
 
 interface LendRequest {
   id: number;
@@ -28,100 +30,6 @@ interface DisplayRequest {
   status: 'Pending' | 'Approved' | 'Declined';
   canRespond: boolean;
 }
-
-const contractAddress = '0x01ad9Ea4DA34c5386135951a50823eCaC3ec3Ec5' as `0x${string}`;
-
-const contractABI = [
-  {
-    "type": "function",
-    "name": "getUserLendRequestsLenderPOV",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "tuple[]",
-        "internalType": "struct LendRequest[]",
-        "components": [
-          {
-            "name": "id",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "borrowerAddress",
-            "type": "address",
-            "internalType": "address"
-          },
-          {
-            "name": "lenderAddress",
-            "type": "address",
-            "internalType": "address"
-          },
-          {
-            "name": "carbonCredits",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "response",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "interestRate",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "timeOfissue",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "eligibilityScore",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "proofData",
-            "type": "string",
-            "internalType": "string"
-          },
-          {
-            "name": "status",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "recommendation",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "respondToLendRequest",
-    "inputs": [
-      {
-        "name": "requestId",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "response",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  }
-] as const;
-
 export default function CreditRequests() {
   const [incomingRequests, setIncomingRequests] = useState<DisplayRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -138,7 +46,6 @@ export default function CreditRequests() {
     hash,
   });
 
-  // Read contract data with proper error handling
   const { data: lendRequestsData, isError: isReadError, isLoading: isReadLoading, refetch } = useReadContract({
     address: contractAddress,
     abi: contractABI,
@@ -150,12 +57,10 @@ export default function CreditRequests() {
     },
   });
 
-  // Fix hydration issues
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Process contract data with better error handling and debugging
   useEffect(() => {
     if (!isClient) return;
 

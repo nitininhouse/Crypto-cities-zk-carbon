@@ -3,17 +3,9 @@ import { Users } from 'lucide-react';
 import { useUser, useWallet } from "@civic/auth-web3/react";
 import { useAccount, useWriteContract, useReadContract, useBalance } from "wagmi";
 import { parseAbi, formatEther } from 'viem';
+import { CONTRACT_ADDRESS } from '@/utils/constants/contracts';
+import { CONTRACT_ABI } from '@/utils/constants/abi';
 
-const CONTRACT_ADDRESS = "0x01ad9Ea4DA34c5386135951a50823eCaC3ec3Ec5" as const;
-
-// Use parseAbi for better type safety
-const CONTRACT_ABI = parseAbi([
-  'function createOrganisation(string _name, string _description, string _profilePhotoipfsHashCode, address _walletAddress, uint256 _timesBorrowed, uint256 _timesLent, uint256 _totalCarbonCreditsLent, uint256 _totalCarbonCreditsBorrowed, uint256 _totalCarbonCreditsReturned, uint256 _emissions, uint256 _reputationScore)',
-  'function addressToOrganisation(address) view returns (string name, string description, string profilePhotoipfsHashCode, address walletAddress, uint256 timesBorrowed, uint256 timesLent, uint256 totalCarbonCreditsLent, uint256 totalCarbonCreditsBorrowed, uint256 totalCarbonCreditsReturned, uint256 emissions, uint256 reputationScore)',
-  'function recordOrganisationEmissions(uint256 _emissions)'
-]);
-
-// Type definitions
 interface OrganizationState {
   name: string;
   description: string;
