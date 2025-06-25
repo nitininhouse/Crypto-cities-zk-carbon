@@ -3,6 +3,8 @@ import { Users } from 'lucide-react';
 import { useUser, useWallet } from "@civic/auth-web3/react";
 import { useAccount, useWriteContract, useReadContract, useBalance } from "wagmi";
 import { parseAbi, formatEther, parseUnits } from 'viem';
+import { CONTRACT_ADDRESS } from '@/utils/constants/contracts';
+import { CONTRACT_ABI } from '@/utils/constants/abi';
 import dynamic from 'next/dynamic';
 
 interface Organization {
@@ -27,18 +29,6 @@ interface MyOrganizationDetail {
   emissions: string;
   reputationScore: string;
 }
-
-const CONTRACT_ADDRESS = '0x01ad9Ea4DA34c5386135951a50823eCaC3ec3Ec5' as const;
-
-
-
-const CONTRACT_ABI = parseAbi([
-  
-  'function getAllOrganisationDetails() view returns ((string name, string description, string profilePhotoipfsHashCode, uint256 totalCarbonCredits, uint256 timesLent, address walletAddress)[])',
-  
-  'function getMyOrganisationDetails() view returns (string name, string description, string profilePhotoipfsHashCode, address walletAddress, uint256 timesBorrowed, uint256 timesLent, uint256 totalCarbonCreditsLent, uint256 totalCarbonCreditsBorrowed, uint256 totalCarbonCreditsReturned, uint256 emissions, uint256 reputationScore)',
-  'function getBalanceOfOrganisation() view returns (uint256)'
-]);
 
 const OrganizationsPage: React.FC = () => {
   // Civic hooks
@@ -151,7 +141,7 @@ useEffect(() => {
       const parsedBalance = myBalance?.toString() ?? "0";
       setMyOrgCarbonCredits(parsedBalance);
 
-      const orgData = myOrgData as Partial<MyOrganizationDetail>;
+      const orgData = myOrgData as unknown as Partial<MyOrganizationDetail>;
       const myOrgDetail: MyOrganizationDetail = {
         name: orgData.name ?? "",
         description: orgData.description ?? "",

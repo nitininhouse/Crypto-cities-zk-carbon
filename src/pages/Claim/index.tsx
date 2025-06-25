@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { CONTRACT_ADDRESS as contractAddress } from "@/utils/constants/contracts";
+import { CONTRACT_ABI as abi } from "@/utils/constants/abi";
 
-// Define types for type safety
 interface Claim {
   id: number;
   org: string;
@@ -21,109 +22,6 @@ interface VotedClaims {
   [claimId: number]: boolean;
 }
 
-const contractAddress = "0x01ad9Ea4DA34c5386135951a50823eCaC3ec3Ec5" as `0x${string}`;
-
-const abi = [
-  {
-    "type": "function",
-    "name": "getClaimDetailsPublic",
-    "inputs": [
-      {
-        "name": "_claimId",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "tuple",
-        "internalType": "struct ClaimPublicView",
-        "components": [
-          {
-            "name": "id",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "organisationAddress",
-            "type": "address",
-            "internalType": "address"
-          },
-          {
-            "name": "demandedCarbonCredits",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "voting_end_time",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "status",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "description",
-            "type": "string",
-            "internalType": "string"
-          },
-          {
-            "name": "latitudes",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "longitudes",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "proofIpfsHashCode",
-            "type": "string[]",
-            "internalType": "string[]"
-          },
-          {
-            "name": "yes_votes",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "no_votes",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "total_votes",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    type: "function",
-    name: "vote",
-    inputs: [
-      { name: "_claimId", type: "uint256" },
-      { name: "_vote", type: "bool" },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "claimCount", 
-    inputs: [],
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-  },
-] as const;
-
 const AllClaims = () => {
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
@@ -142,7 +40,6 @@ const AllClaims = () => {
     hash,
   });
 
-  // Fix hydration issues by ensuring client-side only rendering for time-sensitive content
   useEffect(() => {
     setIsClient(true);
     setCurrentTime(Math.floor(Date.now() / 1000));
