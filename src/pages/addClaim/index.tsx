@@ -1,13 +1,8 @@
 import React, { useState, useEffect, ChangeEvent, DragEvent, FormEvent } from 'react';
 import { useAccount, useWriteContract } from "wagmi";
 import { parseAbi } from 'viem';
-
-const CONTRACT_ADDRESS = "0x01ad9Ea4DA34c5386135951a50823eCaC3ec3Ec5" as const;
-
-// Contract ABI - Updated to match your contract
-const CONTRACT_ABI = parseAbi([
-  'function createClaim(uint256 _demandedCarbonCredits, uint256 _voting_end_time, string _description, uint256 _latitudes, uint256 _longitudes, string[] _proofIpfsHashCode)'
-]);
+import { CONTRACT_ADDRESS } from '@/utils/constants/contracts';
+import { CONTRACT_ABI } from '@/utils/constants/abi';
 
 interface FormData {
   latitude: string;
