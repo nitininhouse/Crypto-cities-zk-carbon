@@ -88,10 +88,10 @@ const AllClaims = () => {
       try {
         // Dynamic import to avoid SSR issues
         const { createPublicClient, http } = await import('viem');
-        const { sepolia } = await import('viem/chains');
+        const { base } = await import('viem/chains');
         
         const publicClient = createPublicClient({
-          chain: sepolia,
+          chain: base,
           transport: http()
         });
 
