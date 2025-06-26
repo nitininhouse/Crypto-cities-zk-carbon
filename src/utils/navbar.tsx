@@ -1,7 +1,7 @@
 import ConnectWallet from '@/components/ConnectWallet';
 import Head from 'next/head';
 import Link from 'next/link';
-import CivicConnectWallet from '@/components/CivicConnectWallet';
+
 
 const Navbar = () => {
   return (
