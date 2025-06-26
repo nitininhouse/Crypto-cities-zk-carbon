@@ -86,7 +86,7 @@ const Navbar = () => {
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full blur opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
               <div className="relative">
-                <CivicConnectWallet />
+                <ConnectWallet />
               </div>
             </div>
           </div>
