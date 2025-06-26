@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Users } from 'lucide-react';
-import { useUser, useWallet } from "@civic/auth-web3/react";
-import { useAccount, useWriteContract, useReadContract, useBalance } from "wagmi";
+import { useAccount, useWriteContract, useReadContract, useBalance, useConnect } from "wagmi";
 import { parseAbi, formatEther, parseUnits } from 'viem';
 import { CONTRACT_ADDRESS } from '@/utils/constants/contracts';
 import { CONTRACT_ABI } from '@/utils/constants/abi';
-import dynamic from 'next/dynamic';
+import { injected } from 'wagmi/connectors';
 
 interface Organization {
   name: string;
@@ -31,10 +30,9 @@ interface MyOrganizationDetail {
 }
 
 const OrganizationsPage: React.FC = () => {
-  // Civic hooks
-  const userContext = useUser();
-  const walletContext = useWallet({ type: 'ethereum' });
+  // Wagmi hooks
   const { address, isConnected } = useAccount();
+  const { connect } = useConnect();
 
   // Get wallet balance
   const { data: balance } = useBalance({
@@ -100,73 +98,71 @@ const OrganizationsPage: React.FC = () => {
   }, []);
 
   // Process contract data when available
-  // Add this debugging code to your useEffect where you process contract data
+  useEffect(() => {
+    if (organizationsData && myBalance !== undefined && myOrgData) {
+      try {
+        console.log("Raw contract data:");
+        console.log("organizationsData:", organizationsData);
+        console.log("myOrgData:", myOrgData);
+        console.log("myBalance:", myBalance?.toString());
+        console.log("Current wallet address:", address);
 
-useEffect(() => {
-  if (organizationsData && myBalance !== undefined && myOrgData) {
-    try {
-      console.log("Raw contract data:");
-      console.log("organizationsData:", organizationsData);
-      console.log("myOrgData:", myOrgData);
-      console.log("myBalance:", myBalance?.toString());
-      console.log("Current wallet address:", address);
+        // Process organizations data
+        const parsedOrgs: Organization[] = Array.isArray(organizationsData)
+          ? organizationsData.map((org: any, index: number) => {
+              console.log(`Organization ${index}:`, org);
+              console.log(`Wallet address: ${org.walletAddress}`);
+              console.log(`Is this your org? ${org.walletAddress?.toLowerCase() === address?.toLowerCase()}`);
+              
+              return {
+                name: org.name,
+                description: org.description,
+                profilePhotoipfsHashCode: org.profilePhotoipfsHashCode,
+                totalCarbonCredits: org.totalCarbonCredits.toString(),
+                walletAddress: org.walletAddress,
+                timesLent: org.timesLent?.toString() || "0",
+              };
+            })
+          : [];
 
-      // Process organizations data
-      const parsedOrgs: Organization[] = Array.isArray(organizationsData)
-        ? organizationsData.map((org: any, index: number) => {
-            console.log(`Organization ${index}:`, org);
-            console.log(`Wallet address: ${org.walletAddress}`);
-            console.log(`Is this your org? ${org.walletAddress?.toLowerCase() === address?.toLowerCase()}`);
-            
-            return {
-              name: org.name,
-              description: org.description,
-              profilePhotoipfsHashCode: org.profilePhotoipfsHashCode,
-              totalCarbonCredits: org.totalCarbonCredits.toString(),
-              walletAddress: org.walletAddress,
-              timesLent: org.timesLent?.toString() || "0",
-            };
-          })
-        : [];
+        // Check if your organization is in the list
+        const myOrgInList = parsedOrgs.find(org => 
+          org.walletAddress?.toLowerCase() === address?.toLowerCase()
+        );
+        
+        console.log("Your organization in list:", myOrgInList);
+        console.log("Total organizations found:", parsedOrgs.length);
 
-      // Check if your organization is in the list
-      const myOrgInList = parsedOrgs.find(org => 
-        org.walletAddress?.toLowerCase() === address?.toLowerCase()
-      );
-      
-      console.log("Your organization in list:", myOrgInList);
-      console.log("Total organizations found:", parsedOrgs.length);
+        // Rest of your existing code...
+        const parsedBalance = myBalance?.toString() ?? "0";
+        setMyOrgCarbonCredits(parsedBalance);
 
-      // Rest of your existing code...
-      const parsedBalance = myBalance?.toString() ?? "0";
-      setMyOrgCarbonCredits(parsedBalance);
-
-      const orgData = myOrgData as unknown as Partial<MyOrganizationDetail>;
-      const myOrgDetail: MyOrganizationDetail = {
-        name: orgData.name ?? "",
-        description: orgData.description ?? "",
-        profilePhotoipfsHashCode: orgData.profilePhotoipfsHashCode ?? "",
-        walletAddress: orgData.walletAddress ?? "",
-        timesBorrowed: orgData.timesBorrowed ? orgData.timesBorrowed.toString() : "0",
-        timesLent: orgData.timesLent ? orgData.timesLent.toString() : "0",
-        totalCarbonCreditsLent: orgData.totalCarbonCreditsLent ? orgData.totalCarbonCreditsLent.toString() : "0",
-        totalCarbonCreditsBorrowed: orgData.totalCarbonCreditsBorrowed ? orgData.totalCarbonCreditsBorrowed.toString() : "0",
-        totalCarbonCreditsReturned: orgData.totalCarbonCreditsReturned ? orgData.totalCarbonCreditsReturned.toString() : "0",
-        emissions: orgData.emissions ? orgData.emissions.toString() : "0",
-        reputationScore: orgData.reputationScore ? orgData.reputationScore.toString() : "0",
-      };
-      
-      setMyOrg(myOrgDetail);
-      setOrganizations(parsedOrgs);
-      setLoading(false);
-      console.log("Organizations fetched:", parsedOrgs);
-    } catch (err) {
-      console.error("Error processing contract data:", err);
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
-      setLoading(false);
+        const orgData = myOrgData as unknown as Partial<MyOrganizationDetail>;
+        const myOrgDetail: MyOrganizationDetail = {
+          name: orgData.name ?? "",
+          description: orgData.description ?? "",
+          profilePhotoipfsHashCode: orgData.profilePhotoipfsHashCode ?? "",
+          walletAddress: orgData.walletAddress ?? "",
+          timesBorrowed: orgData.timesBorrowed ? orgData.timesBorrowed.toString() : "0",
+          timesLent: orgData.timesLent ? orgData.timesLent.toString() : "0",
+          totalCarbonCreditsLent: orgData.totalCarbonCreditsLent ? orgData.totalCarbonCreditsLent.toString() : "0",
+          totalCarbonCreditsBorrowed: orgData.totalCarbonCreditsBorrowed ? orgData.totalCarbonCreditsBorrowed.toString() : "0",
+          totalCarbonCreditsReturned: orgData.totalCarbonCreditsReturned ? orgData.totalCarbonCreditsReturned.toString() : "0",
+          emissions: orgData.emissions ? orgData.emissions.toString() : "0",
+          reputationScore: orgData.reputationScore ? orgData.reputationScore.toString() : "0",
+        };
+        
+        setMyOrg(myOrgDetail);
+        setOrganizations(parsedOrgs);
+        setLoading(false);
+        console.log("Organizations fetched:", parsedOrgs);
+      } catch (err) {
+        console.error("Error processing contract data:", err);
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+        setLoading(false);
+      }
     }
-  }
-}, [organizationsData, myBalance, myOrgData, address]);
+  }, [organizationsData, myBalance, myOrgData, address]);
 
   async function calculateProof(lenderOrg: any) {
     try {
@@ -313,6 +309,7 @@ useEffect(() => {
       setSelectedLender(null);
     }
   };
+
   const handleBorrowClick = (org: any) => {
     setSelectedLender(org);
     setShowBorrowModal(true);
@@ -334,24 +331,9 @@ useEffect(() => {
     }
   };
 
-  // Show login prompt if user is not authenticated
-  if (!userContext.user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center px-6">
-        <div className="relative group max-w-md w-full">
-          <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 rounded-3xl blur-3xl opacity-30" />
-          <div className="relative bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-xl rounded-3xl p-8 border border-green-500/30 text-center">
-            <Users className="w-16 h-16 mx-auto mb-4 text-green-400" />
-            <h2 className="text-2xl font-bold text-white mb-4">Authentication Required</h2>
-            <p className="text-gray-300 mb-6">Please login with Civic to access the organizations marketplace.</p>
-            <div className="text-sm text-green-400 bg-green-500/10 px-4 py-2 rounded-lg border border-green-500/30">
-              Use Civic Auth to continue
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const handleConnectWallet = () => {
+    connect({ connector: injected() });
+  };
 
   // Show wallet connection prompt if wallet is not connected
   if (!isConnected || !address) {
@@ -361,11 +343,14 @@ useEffect(() => {
           <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 rounded-3xl blur-3xl opacity-30" />
           <div className="relative bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-xl rounded-3xl p-8 border border-green-500/30 text-center">
             <Users className="w-16 h-16 mx-auto mb-4 text-green-400" />
-            <h2 className="text-2xl font-bold text-white mb-4">Wallet Connection Required</h2>
-            <p className="text-gray-300 mb-6">Please connect your Civic embedded wallet to continue.</p>
-            <div className="text-sm text-green-400 bg-green-500/10 px-4 py-2 rounded-lg border border-green-500/30">
-              Connect your wallet through Civic Auth
-            </div>
+            <h2 className="text-2xl font-bold text-white mb-4">Connect Your Wallet</h2>
+            <p className="text-gray-300 mb-6">Please connect your MetaMask wallet to access the organizations marketplace.</p>
+            <button
+              onClick={handleConnectWallet}
+              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-green-500/30"
+            >
+              Connect MetaMask
+            </button>
           </div>
         </div>
       </div>
