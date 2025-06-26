@@ -30,7 +30,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <QueryClientProvider client={queryClient}>
       <WagmiProvider config={wagmiConfig}>
         <CivicAuthProvider 
-          clientId="c109402a-f214-4c1e-8ecb-4d0b95a424d0" // Get this from auth.civic.com
+          clientId="c568161e-f384-49de-8997-3a8bd369ad65" // Get this from auth.civic.com
           initialChain={sepolia}
         >
           <WalletContextProvider>
