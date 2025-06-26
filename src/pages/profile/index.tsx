@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Users } from 'lucide-react';
-import { useUser, useWallet } from "@civic/auth-web3/react";
 import { useAccount, useWriteContract, useReadContract, useBalance } from "wagmi";
 import { parseAbi, formatEther } from 'viem';
 import { CONTRACT_ADDRESS } from '@/utils/constants/contracts';
@@ -22,9 +21,7 @@ interface FormData {
 }
 
 export default function Dashboard() {
-  // Civic hooks
-  const userContext = useUser();
-  const walletContext = useWallet({ type: 'ethereum' });
+  // Wagmi hooks only (removed Civic)
   const { address, isConnected } = useAccount();
 
   // Get wallet balance
@@ -217,25 +214,13 @@ export default function Dashboard() {
     }
   }, [emissionsError]);
 
-  // Show login prompt if user is not authenticated
-  if (!userContext.user) {
-    return (
-      <div className="p-6 max-w-4xl mx-auto">
-        <div className="bg-white p-6 shadow rounded text-center">
-          <h2 className="text-xl font-bold mb-4">Please Login</h2>
-          <p className="text-gray-600 mb-4">You need to login with Civic to access your organization dashboard.</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Show wallet connection prompt if wallet is not connected
+  // Show wallet connection prompt if wallet is not connected (removed Civic check)
   if (!isConnected || !address) {
     return (
       <div className="p-6 max-w-4xl mx-auto">
         <div className="bg-white p-6 shadow rounded text-center">
           <h2 className="text-xl font-bold mb-4">Wallet Not Connected</h2>
-          <p className="text-gray-600 mb-4">Please connect your embedded wallet to continue.</p>
+          <p className="text-gray-600 mb-4">Please connect your MetaMask wallet to continue.</p>
         </div>
       </div>
     );
