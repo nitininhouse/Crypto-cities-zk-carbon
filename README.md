@@ -100,6 +100,8 @@ This allows climate contributors to **prove their impact** while retaining **com
 
 ---
 
+![Screenshot from 2025-06-27 08-25-31](https://github.com/user-attachments/assets/85c28d30-4185-4098-998f-9eceab97ab43)
+
 ## 🧪 Sample Workflow
 
 1. Submit claim via frontend with geolocation + IPFS hash.
@@ -108,7 +110,8 @@ This allows climate contributors to **prove their impact** while retaining **com
 4. If approved, credits are minted and added to user's wallet.
 5. User can now list credits for sale on the integrated marketplace.
 
----
+---![Screenshot from 2025-06-27 08-26-01](https://github.com/user-attachments/assets/b6f6802e-5c6d-4088-b826-91d586633269)
+
 
 ## 🧭 Roadmap
 
@@ -119,6 +122,7 @@ This allows climate contributors to **prove their impact** while retaining **com
 - [ ] Mobile-first submission and voting UI
 
 ---
+![Screenshot from 2025-06-17 14-51-28](https://github.com/user-attachments/assets/603f7e79-4e09-4e49-84d1-d998e312e0fb)
 
 ## 📈 Long-Term Vision
 
