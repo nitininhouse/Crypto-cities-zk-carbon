@@ -66,7 +66,7 @@ const AllClaims = () => {
     return () => clearInterval(timer);
   }, [isClient]);
 
-  // Smart claim loading - stop when consecutive claims don't exist
+ 
   useEffect(() => {
     if (!isClient) return;
     
@@ -86,16 +86,16 @@ const AllClaims = () => {
       const maxConsecutiveNotFound = 3;
       
       try {
-        // Dynamic import to avoid SSR issues
+        
         const { createPublicClient, http } = await import('viem');
-        const { base } = await import('viem/chains');
+        const { baseSepolia } = await import('viem/chains');
         
         const publicClient = createPublicClient({
-          chain: base,
+          chain: baseSepolia,
           transport: http()
         });
 
-        let claimId = 1;
+        let claimId = 0;
         const maxClaims = 100;
         
         while (claimId <= maxClaims && consecutiveNotFound < maxConsecutiveNotFound) {
@@ -237,19 +237,10 @@ const AllClaims = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading claims...</p>
+            
           </div>
           
-          {debugInfo.length > 0 && (
-            <div className="mt-8 bg-white p-4 rounded-lg shadow">
-              <h3 className="font-semibold mb-2">Debug Information:</h3>
-              <div className="text-sm text-gray-600 space-y-1 max-h-32 overflow-y-auto">
-                {debugInfo.map((info, index) => (
-                  <div key={index}>{info}</div>
-                ))}
-              </div>
-            </div>
-          )}
+          
         </div>
       </div>
     );
