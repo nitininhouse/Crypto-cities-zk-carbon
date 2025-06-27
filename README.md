@@ -3,6 +3,8 @@
 **A Trustless, Privacy-Preserving Carbon Credit Marketplace for Network States**  
 🔗 Live Demo: [crypto-cities-zk-carbon.vercel.app](https://crypto-cities-zk-carbon.vercel.app)
 
+<img width="741" alt="image" src="https://github.com/user-attachments/assets/a97d4cb2-6113-4f37-b125-2c10fe13f5c5" />
+
 ---
 
 ## 🚀 Overview
